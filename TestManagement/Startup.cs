@@ -42,7 +42,8 @@ namespace TestManagement
                 .AddSingleton<IApiService, ApiService>()
                 .AddSingleton<ISecurityService, SecurityService>()
                 .AddSingleton<TestCaseService>()
-                .AddSingleton<TestContainerService>();
+                .AddSingleton<TestContainerService>()
+                .AddSingleton<TestPlanService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
