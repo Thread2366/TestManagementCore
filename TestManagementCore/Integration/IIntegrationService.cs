@@ -9,23 +9,22 @@ namespace TestManagementCore.Integration
 {
     public interface IIntegrationService
     {
-        string ConnectionString { get; }
-        IntegrationEndpoints Endpoints { get; }
+        ServiceSettings Settings { get; }
 
 
         #region Tasks management
 
         Task<AuthResult> Auth(string login, string password);
         Task<User> GetUserInfo(string login);
-        Task<Dictionary<Project, Role>> GetProjects(User user);
+        Task<Dictionary<Project, Role>> GetProjects(string login);
 
         #endregion
 
 
         #region Requirements management
 
-        Task<IEnumerable<Specification>> GetSpecifications(Project project);
-        Task<IEnumerable<Requirement>> GetRequirements(Specification specification);
+        Task<IEnumerable<Specification>> GetSpecifications(int projectId);
+        Task<IEnumerable<Requirement>> GetRequirements(int specificationId);
         Task<Specification> GetSpecificationById(int id);
         Task<Requirement> GetRequirementById(int id);
 

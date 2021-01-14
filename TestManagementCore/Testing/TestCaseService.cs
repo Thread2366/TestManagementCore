@@ -14,14 +14,14 @@ namespace TestManagementCore.Testing
 {
     public class TestCaseService : TestServiceBase<TestCase>
     {
-        public TestCaseService(string connectionString) : base(connectionString)
+        public TestCaseService(ServiceSettings settings) : base(settings)
         {
         }
 
         public long RegisterExecution(TestExecution execution)
         {
             execution.ExecutionDate = DateTime.Now;
-            using (var conn = new SqlConnection(ConnectionString))
+            using (var conn = new SqlConnection(Settings.ConnectionString))
             {
                 return conn.Insert(execution);
             }

@@ -13,24 +13,27 @@ namespace TestManagementCore.Security
 {
     public class SecurityService : ISecurityService
     {
+        public SecurityService(ServiceSettings settings)
+        {
+            ConnectionString = settings.ConnectionString;
+        }
+
         public string ConnectionString { get; }
 
-        public IEnumerable<Permission> GetPermissionsByName(string permissionName)
+        public IEnumerable<Permission> GetPermissions()
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var perms = conn.Query<Permission>(
-                    "SELECT * FROM Permissions WHERE PermissionName = @PermName", new { PermName = permissionName });
+                var perms = conn.Query<Permission>("SELECT * FROM Permissions");
                 return perms;
             }
         }
 
-        public IEnumerable<Role> GetRolesByName(string roleName)
+        public IEnumerable<Role> GetRoles()
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var roles = conn.Query<Role>(
-                    "SELECT * FROM Roles WHERE RoleName = @RoleName", new { RoleName = roleName });
+                var roles = conn.Query<Role>("SELECT * FROM Roles");
                 return roles;
             }
         }
@@ -46,21 +49,19 @@ namespace TestManagementCore.Security
             }
         }
 
-        public void AllowAccess(int permId, int roleId)
+        public long AllowAccess(int permId, int roleId)
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                conn.Insert(new AccessRule() { PermissionId = permId, RoleId = roleId });
-                conn.Execute("INSERT INTO AccessRules (PermissionId, RoleId) VALUES (@PermId, @RoleId)",
-                    new { PermId = permId, RoleId = roleId });
+                return conn.Insert(new AccessRule() { PermissionId = permId, RoleId = roleId });
             }
         }
 
-        public void DenyAccess(int permId, int roleId)
+        public int DenyAccess(int permId, int roleId)
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                conn.Execute("DELETE FROM AccessRules WHERE PermissionId = @PermId AND RoleId = @RoleId",
+                return conn.Execute("DELETE FROM AccessRules WHERE PermissionId = @PermId AND RoleId = @RoleId",
                     new { PermId = permId, RoleId = roleId });
             }
         }

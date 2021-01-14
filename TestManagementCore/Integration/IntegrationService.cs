@@ -12,14 +12,12 @@ namespace TestManagementCore.Integration
 {
     public class IntegrationService : IIntegrationService
     {
-        public IntegrationService(string connectionString, IntegrationEndpoints endpoints)
+        public IntegrationService(ServiceSettings settings)
         {
-            ConnectionString = connectionString;
-            Endpoints = endpoints;
+            Settings = settings;
         }
 
-        public string ConnectionString { get; }
-        public IntegrationEndpoints Endpoints { get; }
+        public ServiceSettings Settings { get; }
 
         #region Tasks management
 
@@ -31,7 +29,7 @@ namespace TestManagementCore.Integration
                     JsonConvert.SerializeObject(new { Login = login, Password = password }),
                     Encoding.UTF8,
                     "application/json");
-                var response = await http.PostAsync(Endpoints.AuthEndpoint, content);
+                var response = await http.PostAsync(Settings.AuthEndpoint, content);
                 var respBody = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == HttpStatusCode.Forbidden)
                     return AuthResult.Fail(respBody);
@@ -43,13 +41,13 @@ namespace TestManagementCore.Integration
 
         public Task<User> GetUserInfo(string login)
         {
-            return HttpSend<string, User>(login, $"{Endpoints.UserEndpoint.TrimEnd('/')}/{login}");
+            return HttpSend<string, User>(login, $"{Settings.UserEndpoint.TrimEnd('/')}/{login}");
         }
 
-        public Task<Dictionary<Project, Role>> GetProjects(User user)
+        public Task<Dictionary<Project, Role>> GetProjects(string login)
         {
-            return HttpSend<User, Dictionary<Project, Role>>(
-                user, $"{Endpoints.ProjectsEndpoint.TrimEnd('/')}?login={user.Login}");
+            return HttpSend<string, Dictionary<Project, Role>>(
+                login, $"{Settings.ProjectsEndpoint.TrimEnd('/')}?login={login}");
         }
 
         #endregion
@@ -57,30 +55,30 @@ namespace TestManagementCore.Integration
 
         #region Requirements management
 
-        public Task<IEnumerable<Specification>> GetSpecifications(Project project)
+        public Task<IEnumerable<Specification>> GetSpecifications(int projectId)
         {
-            return HttpSend<Project, IEnumerable<Specification>>(
-                project,
-                $"{Endpoints.SpecificationsEndpoint.TrimEnd('/')}?project={project.Id}");
+            return HttpSend<int, IEnumerable<Specification>>(
+                projectId,
+                $"{Settings.SpecificationsEndpoint.TrimEnd('/')}?project={projectId}");
         }
         
-        public Task<IEnumerable<Requirement>> GetRequirements(Specification specification)
+        public Task<IEnumerable<Requirement>> GetRequirements(int specificationId)
         {
-            return HttpSend<Specification, IEnumerable<Requirement>>(
-                specification, 
-                $"{Endpoints.RequirementsEndpoint.TrimEnd('/')}?specification={specification.Id}");
+            return HttpSend<int, IEnumerable<Requirement>>(
+                specificationId, 
+                $"{Settings.RequirementsEndpoint.TrimEnd('/')}?specification={specificationId}");
         }
 
         public Task<Requirement> GetRequirementById(int id)
         {
             return HttpSend<int, Requirement>(
-                id, $"{Endpoints.RequirementsEndpoint.TrimEnd('/')}/{id}");
+                id, $"{Settings.RequirementsEndpoint.TrimEnd('/')}/{id}");
         }
 
         public Task<Specification> GetSpecificationById(int id)
         {
             return HttpSend<int, Specification>(
-                id, $"{Endpoints.SpecificationsEndpoint.TrimEnd('/')}/{id}");
+                id, $"{Settings.SpecificationsEndpoint.TrimEnd('/')}/{id}");
         }
 
         #endregion

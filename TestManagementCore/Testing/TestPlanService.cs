@@ -9,7 +9,7 @@ namespace TestManagementCore.Testing
 {
     public class TestPlanService : TestServiceBase<TestPlan>
     {
-        public TestPlanService(string connectionString) : base(connectionString)
+        public TestPlanService(ServiceSettings settings) : base(settings)
         {
         }
     }

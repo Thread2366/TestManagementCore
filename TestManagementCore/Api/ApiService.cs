@@ -10,22 +10,22 @@ using System.Data.SqlClient;
 
 namespace TestManagementCore.Api
 {
-    public class ApiService
+    public class ApiService : IApiService
     {
-        public string ConnectionString { get; }
+        public ServiceSettings Settings { get; }
 
-        public ApiService(string connectionString)
+        public ApiService(ServiceSettings settings)
         {
-            ConnectionString = connectionString;
+            Settings = settings;
         }
 
-        public bool CheckIfRequirementIsTested(Requirement requirement)
+        public bool CheckIfRequirementIsTested(int id)
         {
             var testCaseIds = new List<int>();
-            using var conn = new SqlConnection(ConnectionString);
+            using var conn = new SqlConnection(Settings.ConnectionString);
             var containers = conn.Query<ContainerRequirementLink>(
                 "SELECT * FROM TestContainers_Requirements WHERE RequirementId = @RequirementId",
-                new { RequirementId = requirement.Id }).Select(x => x.ContainerId);
+                new { RequirementId = id }).Select(x => x.ContainerId);
             while (containers.Any())
             {
                 var inClause = string.Join(',', containers);
@@ -57,9 +57,9 @@ namespace TestManagementCore.Api
             return true;
         }
 
-        public IEnumerable<int> GetTestedRequirements(Specification specification)
+        public IEnumerable<int> GetTestedRequirements(int id)
         {
-            throw new NotImplementedException();
+            return Enumerable.Empty<int>();
         }
     }
 }

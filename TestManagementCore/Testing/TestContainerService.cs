@@ -12,8 +12,15 @@ namespace TestManagementCore.Testing
 {
     public class TestContainerService : TestServiceBase<TestContainer>
     {
-        public TestContainerService(string connectionString) : base(connectionString)
+        public TestContainerService(ServiceSettings settings) : base(settings)
         {
+        }
+
+        public int BindRequirements(int containerId, IEnumerable<int> reqIds)
+        {
+            using var conn = new SqlConnection(Settings.ConnectionString);
+            return conn.Execute("INSERT INTO TestContainers_Requirements (ContainerId, RequirementId) VALUES " +
+                $"{string.Join(',', reqIds.Select(reqId => $"({containerId}, {reqId})"))}");
         }
     }
 }

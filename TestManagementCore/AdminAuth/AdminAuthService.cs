@@ -13,26 +13,26 @@ namespace TestManagementCore.AdminAuth
 {
     public class AdminAuthService : IAdminAuthService
     {
-        public string ConnectionString { get; }
+        public ServiceSettings Settings { get; }
 
-        public AdminAuthService(string connectionString)
+        public AdminAuthService(ServiceSettings settings)
         {
-            ConnectionString = connectionString;
+            Settings = settings;
         }
 
         public string GetPasswordHash(string login)
         {
-            using (var conn = new SqlConnection(ConnectionString))
+            using (var conn = new SqlConnection(Settings.ConnectionString))
             {
                 var adm = conn.QueryFirstOrDefault<Administrator>(
                     "SELECT * FROM Administrators WHERE Login = @Login", new { Login = login });
-                return adm.PasswordHash;
+                return adm?.PasswordHash;
             }
         }
 
         public void RegisterAdmin(string login, string passwordHash)
         {
-            using (var conn = new SqlConnection(ConnectionString))
+            using (var conn = new SqlConnection(Settings.ConnectionString))
             {
                 conn.Execute("INSERT INTO Administrators (Login, PasswordHash) VALUES (@Login, @Password)",
                     new { Login = login, Password = passwordHash });
