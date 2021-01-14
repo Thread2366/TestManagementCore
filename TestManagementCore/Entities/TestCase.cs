@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Dapper.Contrib.Extensions;
 
 namespace TestManagementCore.Entities
 {
-    public class TestCase
+    [Table("TestCases")]
+    public class TestCase : ITestEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -15,5 +17,7 @@ namespace TestManagementCore.Entities
         public string Expected { get; set; }
         public int ExecutionOrder { get; set; }
         public int ContainerId { get; set; }
+        public string AuthorLogin { get; set; }
+        public bool Tested { get; set; }
     }
 }

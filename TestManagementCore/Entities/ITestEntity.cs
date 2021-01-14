@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace TestManagementCore.Entities
 {
-    public class ContainerPlanLink
+    public interface ITestEntity
     {
         public int Id { get; set; }
-        public int TestContainerId { get; set; }
-        public int TestPlanId { get; set; }
     }
 }
